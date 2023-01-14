@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 
 function DataFetching() {
   const [games, setGames] = useState([]);
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
 
   const options = {
     method: "GET",
@@ -20,62 +22,49 @@ function DataFetching() {
       .then(function (response) {
         const data = response.data;
         setGames(data);
-        console.log(response.data);
       })
       .catch(function (error) {
         console.error(error);
       });
   }, []);
 
-  const createGamesMapData = () => {
-    let gamesData = {};
-    games.map((key) => {
-      gamesData[key] = this.state.items.filter((currentValue) => {
-        if (currentValue.value[0] === key) return currentValue;
-      });
+  function getAutoCompleteResults(query) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(
+          games.filter((game) =>
+            game.title.toLowerCase().includes(query.toLowerCase())
+          )
+        );
+      }, Math.random() * 1000);
     });
-  };
+  }
 
-  const handleClick = (event) => {
-    const brandValues = event.target.value;
-    if (event.target.value === "all") {
-      return this.getBrands();
-    } else {
-      console.log(this.state.brandSortData);
-      let brandSortDataByCharacter = this.state.brandSortData.filter(
-        (currentCharacter) => {
-          if (currentCharacter.value[0] === brandValues)
-            return currentCharacter;
-        }
-      );
-      return brandSortDataByCharacter;
-    }
-  };
+  useEffect(() => {
+    (async () => {
+      setSuggestions([]);
+      if (query.length > 0) {
+        console.log(query);
+        const data = await getAutoCompleteResults(query);
+        setSuggestions(data);
+      }
+    })();
+  }, [query]);
 
   return (
-    <div>
-      <button
-        value="all"
-        className="BrandPageList_AllButton"
-        onClick={handleClick}
-      >
-        All
-      </button>
-      {games.map((game) => (
-        <button
-          value={game.title}
-          key={game.id}
-          className="BrandPageList_AlphabetButtons"
-          onClick={handleClick}
-        >
-          {game.title}
-        </button>
-      ))}
-      <ul>
-        {games.map((game) => (
-          <li key={game.id}>{game.title}</li>
-        ))}
-      </ul>
+    <div className="w-full h-screen flex flex-col items-center">
+      <input
+        className="mt-24 mb-4"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <div className="text-gray-200 flex flex-col gap-2 items-start">
+        {query.length > 0
+          ? suggestions.map((suggestion) => (
+              <div key={suggestion.id}>{suggestion.title}</div>
+            ))
+          : games.map((game) => <div key={game.id}>{game.title}</div>)}
+      </div>
     </div>
   );
 }

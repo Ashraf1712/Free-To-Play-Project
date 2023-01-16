@@ -1,15 +1,34 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useEffect, useState } from "react";
 import "./App.css";
-import DataFetching from "./components/DataFetching";
+import DisplayGames from "./components/displayGames";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 0);
+  }, []);
 
   return (
     <>
-      <div className="text-3xl underline">Hello World!</div>
-      <DataFetching />
+      {isLoading ? (
+        <div className="text-center">
+          <AiOutlineLoading3Quarters
+            className="animate-spin text-sky-500"
+            size={48}
+          />
+          <p>Loading...</p>
+        </div>
+      ) : (
+        <>
+          <div className="text-3xl underline font-gg">FREE TO PLAY GAME!</div>
+          <DisplayGames />
+        </>
+      )}
     </>
   );
 }

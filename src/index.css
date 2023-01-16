@@ -72,3 +72,8 @@ button:focus-visible {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "burtons";
+  src: url("../public/fonts/Burtons.otf");
+}
